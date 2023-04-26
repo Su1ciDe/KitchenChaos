@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9928e8fcaec34ef68091fe02106aa446, type: 3}
+  m_Name: MegaBurger
+  m_EditorClassIdentifier: 
+  KitchenObjectSOs:
+  - {fileID: 11400000, guid: 901ae1b1cd4f11d4d9e4d7d0816ff7de, type: 2}
+  - {fileID: 11400000, guid: fb13ba39996d5d2449dced43ed133a40, type: 2}
+  - {fileID: 11400000, guid: 89430adbf8560b543ab8241a16bde452, type: 2}
+  - {fileID: 11400000, guid: 844d84e6fd3bd7c47b08049c33abe5da, type: 2}
+  - {fileID: 11400000, guid: 5db4106bc762ed342900c45746bb1021, type: 2}
+  RecipeName: Chaos Burger
