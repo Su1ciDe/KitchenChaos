@@ -38,7 +38,8 @@ namespace UI
 
 		private void ClickOptions()
 		{
-			OptionsUI.Instance.Show();
+			Hide();
+			OptionsUI.Instance.Show(Show);
 		}
 
 		private void OnGameUnpaused()
@@ -54,6 +55,7 @@ namespace UI
 		private void Show()
 		{
 			gameObject.SetActive(true);
+			btnResume.Select();
 		}
 
 		private void Hide()

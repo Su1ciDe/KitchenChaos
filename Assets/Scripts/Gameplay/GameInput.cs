@@ -16,7 +16,11 @@ namespace Gameplay
 			MoveRight,
 			Interact,
 			InteractAlt,
-			Pause
+			Pause,
+
+			Gamepad_Interact,
+			Gamepad_InteractAlt,
+			Gamepad_Pause,
 		}
 
 		private PlayerInputActions playerInputActions;
@@ -81,6 +85,9 @@ namespace Gameplay
 				Binding.Interact => playerInputActions.Player.Interact.bindings[0].ToDisplayString(),
 				Binding.InteractAlt => playerInputActions.Player.InteractAlt.bindings[0].ToDisplayString(),
 				Binding.Pause => playerInputActions.Player.Pause.bindings[0].ToDisplayString(),
+				Binding.Gamepad_Interact => playerInputActions.Player.Interact.bindings[1].ToDisplayString(),
+				Binding.Gamepad_InteractAlt => playerInputActions.Player.InteractAlt.bindings[1].ToDisplayString(),
+				Binding.Gamepad_Pause => playerInputActions.Player.Pause.bindings[1].ToDisplayString(),
 				_ => throw new ArgumentOutOfRangeException(nameof(binding), binding, null)
 			};
 		}
@@ -120,6 +127,18 @@ namespace Gameplay
 				case Binding.Pause:
 					inputAction = playerInputActions.Player.Pause;
 					bindingIndex = 0;
+					break;
+				case Binding.Gamepad_Interact:
+					inputAction = playerInputActions.Player.Interact;
+					bindingIndex = 1;
+					break;
+				case Binding.Gamepad_InteractAlt:
+					inputAction = playerInputActions.Player.InteractAlt;
+					bindingIndex = 1;
+					break;
+				case Binding.Gamepad_Pause:
+					inputAction = playerInputActions.Player.Pause;
+					bindingIndex = 1;
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(binding), binding, null);

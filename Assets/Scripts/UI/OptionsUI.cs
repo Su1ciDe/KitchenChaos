@@ -2,6 +2,7 @@
 using Managers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace UI
@@ -22,6 +23,9 @@ namespace UI
 		[SerializeField] private Button btnInteract;
 		[SerializeField] private Button btnInteractAlt;
 		[SerializeField] private Button btnPause;
+		[SerializeField] private Button btnGamepadInteract;
+		[SerializeField] private Button btnGamepadInteractAlt;
+		[SerializeField] private Button btnGamepadPause;
 		private TMP_Text txtMoveUp;
 		private TMP_Text txtMoveDown;
 		private TMP_Text txtMoveLeft;
@@ -29,8 +33,13 @@ namespace UI
 		private TMP_Text txtInteract;
 		private TMP_Text txtInteractAlt;
 		private TMP_Text txtPause;
+		private TMP_Text txtGamepadInteract;
+		private TMP_Text txtGamepadInteractAlt;
+		private TMP_Text txtGamepadPause;
 		[SerializeField] private GameObject pressToRebindPanel;
 
+		private UnityAction OnCloseButtonAction;
+		
 		private void Awake()
 		{
 			InitControlButtons();
@@ -49,6 +58,9 @@ namespace UI
 			btnInteract.onClick.AddListener(() => RebindBinding(GameInput.Binding.Interact));
 			btnInteractAlt.onClick.AddListener(() => RebindBinding(GameInput.Binding.InteractAlt));
 			btnPause.onClick.AddListener(() => RebindBinding(GameInput.Binding.Pause));
+			btnGamepadInteract.onClick.AddListener(() => RebindBinding(GameInput.Binding.Gamepad_Interact));
+			btnGamepadInteractAlt.onClick.AddListener(() => RebindBinding(GameInput.Binding.Gamepad_InteractAlt));
+			btnGamepadPause.onClick.AddListener(() => RebindBinding(GameInput.Binding.Gamepad_Pause));
 
 			soundEffectSlider.value = SoundManager.Instance.Volume * 10;
 			musicSlider.value = MusicManager.Instance.Volume * 10;
@@ -74,6 +86,9 @@ namespace UI
 			txtInteract.SetText(GameInput.Instance.GetBindingText(GameInput.Binding.Interact));
 			txtInteractAlt.SetText(GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlt));
 			txtPause.SetText(GameInput.Instance.GetBindingText(GameInput.Binding.Pause));
+			txtGamepadInteract.SetText(GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Interact));
+			txtGamepadInteractAlt.SetText(GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_InteractAlt));
+			txtGamepadPause.SetText(GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Pause));
 		}
 
 		private void SoundEffectChanged(float value)
@@ -86,13 +101,18 @@ namespace UI
 			MusicManager.Instance.ChangeVolume(value / 10f);
 		}
 
-		public void Show()
+		public void Show(UnityAction onCloseButtonAction)
 		{
+			OnCloseButtonAction = onCloseButtonAction;
+			
 			gameObject.SetActive(true);
+			soundEffectSlider.Select();
 		}
 
 		private void Hide()
 		{
+			OnCloseButtonAction?.Invoke();
+			
 			PlayerPrefs.Save();
 			gameObject.SetActive(false);
 		}
@@ -126,6 +146,9 @@ namespace UI
 			txtInteract = btnInteract.GetComponentInChildren<TMP_Text>();
 			txtInteractAlt = btnInteractAlt.GetComponentInChildren<TMP_Text>();
 			txtPause = btnPause.GetComponentInChildren<TMP_Text>();
+			txtGamepadInteract = btnGamepadInteract.GetComponentInChildren<TMP_Text>();
+			txtGamepadInteractAlt = btnGamepadInteractAlt.GetComponentInChildren<TMP_Text>();
+			txtGamepadPause = btnGamepadPause.GetComponentInChildren<TMP_Text>();
 		}
 	}
 }
