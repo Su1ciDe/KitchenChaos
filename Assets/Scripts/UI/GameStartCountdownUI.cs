@@ -8,6 +8,15 @@ namespace UI
 	{
 		[SerializeField] private TMP_Text txtCountdown;
 
+		private int previousCountdownNumber;
+		private Animator animator;
+		private static readonly int numberPopup = Animator.StringToHash("NumberPopup");
+
+		private void Awake()
+		{
+			animator = GetComponent<Animator>();
+		}
+
 		private void OnEnable()
 		{
 			GameManager.Instance.OnStateChanged += OnStateChanged;
@@ -15,7 +24,15 @@ namespace UI
 
 		private void Update()
 		{
-			txtCountdown.SetText(Mathf.CeilToInt(GameManager.Instance.GetCountdownToStartTimer()).ToString());
+			int countdownNumber = Mathf.CeilToInt(GameManager.Instance.GetCountdownToStartTimer());
+			txtCountdown.SetText(countdownNumber.ToString());
+
+			if (!previousCountdownNumber.Equals(countdownNumber))
+			{
+				previousCountdownNumber = countdownNumber;
+				animator.SetTrigger(numberPopup);
+				SoundManager.Instance.PlayCountdownSound();
+			}
 		}
 
 		private void OnStateChanged(GameManager.State state)
