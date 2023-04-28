@@ -4,7 +4,7 @@ namespace Interfaces
 {
 	public interface IHasProgress
 	{
-		public event UnityAction<float, bool> OnProgressChanged;
+		public event UnityAction<float, bool> OnProgressChanged; //<progressNormalized, isAnimated> 
 
 	}
 }

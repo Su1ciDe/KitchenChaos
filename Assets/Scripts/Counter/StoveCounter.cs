@@ -38,6 +38,8 @@ namespace Counter
 			}
 		}
 
+		public bool IsFried => CurrentState == State.Fried;
+
 		public event UnityAction<State> OnStateChanged;
 		public event UnityAction<float, bool> OnProgressChanged;
 

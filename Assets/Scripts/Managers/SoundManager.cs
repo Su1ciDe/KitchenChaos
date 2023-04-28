@@ -44,7 +44,12 @@ namespace Managers
 
 		public void PlayCountdownSound()
 		{
-			PlaySound(audioClipRefsSO.Warning,Vector3.zero);
+			PlaySound(audioClipRefsSO.Warning, Vector3.zero);
+		}
+
+		public void PlayWarningSound(Vector3 position)
+		{
+			PlaySound(audioClipRefsSO.Warning, position);
 		}
 
 		private void OnAnyObjectTrashed(Vector3 position)
