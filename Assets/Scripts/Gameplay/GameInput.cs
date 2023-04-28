@@ -30,6 +30,7 @@ namespace Gameplay
 		public static event EventHandler OnInteractAction;
 		public static event EventHandler OnInteractAltAction;
 		public static event EventHandler OnPauseAction;
+		public static event UnityAction OnBindingRebound;
 
 		private void Awake()
 		{
@@ -153,6 +154,8 @@ namespace Gameplay
 
 				PlayerPrefs.SetString(BINDINGS_PLAYERPREFS, playerInputActions.SaveBindingOverridesAsJson());
 				PlayerPrefs.Save();
+
+				OnBindingRebound?.Invoke();
 			}).Start();
 		}
 	}

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UI
 {
-	public class GameStartCountdownUI : MonoBehaviour
+	public class GameStartCountdownUI : BaseUI
 	{
 		[SerializeField] private TMP_Text txtCountdown;
 
@@ -24,16 +24,6 @@ namespace UI
 				Show();
 			else
 				Hide();
-		}
-
-		private void Show()
-		{
-			gameObject.SetActive(true);
-		}
-
-		private void Hide()
-		{
-			gameObject.SetActive(false);
 		}
 	}
 }

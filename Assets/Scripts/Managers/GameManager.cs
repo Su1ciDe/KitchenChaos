@@ -10,7 +10,6 @@ namespace Managers
 	{
 		public bool IsPlaying => state == State.GamePlaying;
 
-		[SerializeField] private float waitingToStartTimer = 1;
 		[SerializeField] private float countdownToStartTimer = 3;
 		[SerializeField] private float gamePlayingTimerMax = 10;
 		private float gamePlayingTimer;
@@ -39,6 +38,7 @@ namespace Managers
 		{
 			OnStateChanged?.Invoke(state);
 			GameInput.OnPauseAction += OnPause;
+			GameInput.OnInteractAction += OnInteractAction;
 		}
 
 		private void Update()
@@ -46,13 +46,6 @@ namespace Managers
 			switch (state)
 			{
 				case State.WaitingToStart:
-					waitingToStartTimer -= Time.deltaTime;
-					if (waitingToStartTimer < 0f)
-					{
-						state = State.CountdownToStart;
-						OnStateChanged?.Invoke(state);
-					}
-
 					break;
 				case State.CountdownToStart:
 					countdownToStartTimer -= Time.deltaTime;
@@ -78,6 +71,16 @@ namespace Managers
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+		}
+
+		private void OnInteractAction(object sender, EventArgs e)
+		{
+			if (state != State.WaitingToStart) return;
+
+			state = State.CountdownToStart;
+			OnStateChanged?.Invoke(state);
+
+			GameInput.OnInteractAction -= OnInteractAction;
 		}
 
 		public float GetCountdownToStartTimer()

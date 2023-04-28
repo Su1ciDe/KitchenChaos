@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UI
 {
-	public class GameOverUI : MonoBehaviour
+	public class GameOverUI : BaseUI
 	{
 		[SerializeField] private TMP_Text txtRecipesDelivered;
 
@@ -21,15 +21,10 @@ namespace UI
 				Hide();
 		}
 
-		private void Show()
+		protected override void Show()
 		{
 			txtRecipesDelivered.SetText(DeliveryManager.Instance.SuccessfulRecipesAmount.ToString());
-			gameObject.SetActive(true);
-		}
-
-		private void Hide()
-		{
-			gameObject.SetActive(false);
+			base.Show();
 		}
 	}
 }

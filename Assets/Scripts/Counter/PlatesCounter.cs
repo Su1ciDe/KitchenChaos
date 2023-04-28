@@ -1,5 +1,6 @@
 ﻿using Gameplay;
 using Interfaces;
+using Managers;
 using ScriptableObjects;
 using UnityEngine;
 using UnityEngine.Events;
@@ -22,16 +23,20 @@ namespace Counter
 
 		private void Update()
 		{
-			if (platesSpawnedAmount < platesSpawnedAmountMax)
+			Countdown();
+		}
+
+		private void Countdown()
+		{
+			if (!GameManager.Instance.IsPlaying || platesSpawnedAmount >= platesSpawnedAmountMax) return;
+
+			spawnPlateTimer += Time.deltaTime;
+			OnProgressChanged?.Invoke(spawnPlateTimer / spawnPlateTimeMax, false);
+			if (spawnPlateTimer > spawnPlateTimeMax)
 			{
-				spawnPlateTimer += Time.deltaTime;
-				OnProgressChanged?.Invoke(spawnPlateTimer / spawnPlateTimeMax, false);
-				if (spawnPlateTimer > spawnPlateTimeMax)
-				{
-					spawnPlateTimer = 0;
-					platesSpawnedAmount++;
-					OnPlateSpawned?.Invoke();
-				}
+				spawnPlateTimer = 0;
+				platesSpawnedAmount++;
+				OnPlateSpawned?.Invoke();
 			}
 		}
 

@@ -5,7 +5,7 @@ using Utility;
 
 namespace UI
 {
-	public class GamePauseUI : MonoBehaviour
+	public class GamePauseUI : BaseUI
 	{
 		[SerializeField] private Button btnResume;
 		[SerializeField] private Button btnOptions;
@@ -52,15 +52,10 @@ namespace UI
 			Show();
 		}
 
-		private void Show()
+		protected override void Show()
 		{
-			gameObject.SetActive(true);
+			base.Show();
 			btnResume.Select();
-		}
-
-		private void Hide()
-		{
-			gameObject.SetActive(false);
 		}
 	}
 }

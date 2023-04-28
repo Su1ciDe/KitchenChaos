@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
-	public class ProgressBarUI : MonoBehaviour
+	public class ProgressBarUI : BaseUI
 	{
 		[SerializeField] private Image barImage;
 
@@ -40,16 +40,6 @@ namespace UI
 				Hide();
 			else
 				Show();
-		}
-
-		private void Show()
-		{
-			gameObject.SetActive(true);
-		}
-
-		private void Hide()
-		{
-			gameObject.SetActive(false);
 		}
 	}
 }

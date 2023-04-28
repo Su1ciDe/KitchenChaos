@@ -28,16 +28,15 @@ namespace Managers
 		private void Update()
 		{
 			spawnRecipeTimer -= Time.deltaTime;
-			if (spawnRecipeTimer <= 0)
-			{
-				spawnRecipeTimer = spawnRecipeTimerMax;
-				if (WaitingRecipeSOs.Count < waitingRecipeMax)
-				{
-					var waitingRecipeSo = recipeListSO.RecipeSOs[Random.Range(0, recipeListSO.RecipeSOs.Count)];
-					WaitingRecipeSOs.Add(waitingRecipeSo);
+			if (!(spawnRecipeTimer <= 0)) return;
 
-					OnRecipeSpawned?.Invoke();
-				}
+			spawnRecipeTimer = spawnRecipeTimerMax;
+			if (GameManager.Instance.IsPlaying && WaitingRecipeSOs.Count < waitingRecipeMax)
+			{
+				var waitingRecipeSo = recipeListSO.RecipeSOs[Random.Range(0, recipeListSO.RecipeSOs.Count)];
+				WaitingRecipeSOs.Add(waitingRecipeSo);
+
+				OnRecipeSpawned?.Invoke();
 			}
 		}
 
