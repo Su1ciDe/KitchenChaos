@@ -22,8 +22,8 @@ namespace Managers
 
 		public event UnityAction OnRecipeSpawned;
 		public event UnityAction OnRecipeCompleted;
-		public event UnityAction<Vector3> OnRecipeSuccess;
-		public event UnityAction<Vector3> OnRecipeFail;
+		public event UnityAction<Vector3> OnRecipeSuccess; // plate position
+		public event UnityAction<Vector3> OnRecipeFail; // plate position
 
 		private void Update()
 		{
