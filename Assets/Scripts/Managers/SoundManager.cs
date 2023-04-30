@@ -10,14 +10,14 @@ namespace Managers
 	{
 		[SerializeField] private AudioClipRefsSO audioClipRefsSO;
 
-		public float Volume => volume;
-		private float volume = 1;
+		public float CurrentVolume => currentVolume;
+		private float currentVolume = 1;
 
 		private const string SOUNDS_EFFECT_VOLUME_PLAYERPREFS = "SoundEffectVolume";
 
 		private void Awake()
 		{
-			volume = PlayerPrefs.GetFloat(SOUNDS_EFFECT_VOLUME_PLAYERPREFS, 1f);
+			currentVolume = PlayerPrefs.GetFloat(SOUNDS_EFFECT_VOLUME_PLAYERPREFS, 1f);
 		}
 
 		private void Start()
@@ -25,7 +25,7 @@ namespace Managers
 			DeliveryManager.Instance.OnRecipeSuccess += OnRecipeSuccess;
 			DeliveryManager.Instance.OnRecipeFail += OnRecipeFailed;
 			CuttingCounter.OnAnyCut += OnCut;
-			// Player.Instance.OnPickedSomething += OnPlayerPickedSomething;
+			Player.OnAnyPlayerPickedSomething += OnPlayerPickedSomething;
 			BaseCounter.OnAnyObjectPlaced += CounterOnAnyObjectPlaced;
 			TrashCounter.OnAnyObjectTrashed += OnAnyObjectTrashed;
 		}
@@ -35,6 +35,7 @@ namespace Managers
 			CuttingCounter.OnAnyCut -= OnCut;
 			BaseCounter.OnAnyObjectPlaced -= CounterOnAnyObjectPlaced;
 			TrashCounter.OnAnyObjectTrashed -= OnAnyObjectTrashed;
+			Player.OnAnyPlayerPickedSomething -= OnPlayerPickedSomething;
 		}
 
 		public void PlayFootstepSound(Vector3 position, float volume)
@@ -84,8 +85,8 @@ namespace Managers
 
 		private void PlaySound(AudioClip audioClip, Vector3 position, float volumeMultiplier = 1f)
 		{
-			if (volume <= 0) return;
-			AudioSource.PlayClipAtPoint(audioClip, position, volume * volumeMultiplier);
+			if (currentVolume <= 0) return;
+			AudioSource.PlayClipAtPoint(audioClip, position, currentVolume * volumeMultiplier);
 		}
 
 		private void PlaySound(AudioClip[] audioClips, Vector3 position, float volumeMultiplier = 1f)
@@ -95,8 +96,8 @@ namespace Managers
 
 		public void ChangeVolume(float volumeValue)
 		{
-			volume = volumeValue;
-			PlayerPrefs.SetFloat(SOUNDS_EFFECT_VOLUME_PLAYERPREFS, volume);
+			currentVolume = volumeValue;
+			PlayerPrefs.SetFloat(SOUNDS_EFFECT_VOLUME_PLAYERPREFS, currentVolume);
 		}
 	}
 }

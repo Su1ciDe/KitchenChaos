@@ -16,12 +16,27 @@ namespace Counter
 
 		private void Start()
 		{
-			// Player.Instance.OnSelectedCounterChanged += OnSelectedCounterChanged;
+			if (Player.LocalInstance)
+				Player.LocalInstance.OnSelectedCounterChanged += OnSelectedCounterChanged;
+			else
+				Player.OnAnyPlayerSpawned += OnAnyPlayerSpawned;
 		}
 
-		private void OnSelectedCounterChanged(object sender, Player.OnSelectedCounterChangedEventArgs e)
+		private void OnDisable()
 		{
-			if (e.selectedCounter == clearCounter)
+			Player.OnAnyPlayerSpawned -= OnAnyPlayerSpawned;
+		}
+
+		private void OnAnyPlayerSpawned()
+		{
+			if (!Player.LocalInstance) return;
+			Player.LocalInstance.OnSelectedCounterChanged -= OnSelectedCounterChanged;
+			Player.LocalInstance.OnSelectedCounterChanged += OnSelectedCounterChanged;
+		}
+
+		private void OnSelectedCounterChanged(BaseCounter selectedCounter)
+		{
+			if (selectedCounter.Equals(clearCounter))
 				Show();
 			else
 				Hide();

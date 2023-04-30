@@ -6,12 +6,12 @@ using Managers;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
-using Utility;
 
 namespace Gameplay
 {
 	public class Player : NetworkBehaviour, IKitchenObjectParent
 	{
+		public static Player LocalInstance { get; private set; }
 		public bool HasKitchenObject => KitchenObject;
 
 		private BaseCounter selectedCounter;
@@ -23,7 +23,11 @@ namespace Gameplay
 			set
 			{
 				kitchenObject = value;
-				if (kitchenObject) OnPickedSomething?.Invoke(kitchenObject.transform.position);
+				if (kitchenObject)
+				{
+					OnPickedSomething?.Invoke(kitchenObject.transform.position);
+					OnAnyPlayerPickedSomething?.Invoke(kitchenObject.transform.position);
+				}
 			}
 		}
 		public Transform KitchenObjectPoint => kitchenObjectPoint;
@@ -31,13 +35,10 @@ namespace Gameplay
 		[SerializeField] private Transform kitchenObjectPoint;
 		[SerializeField] private LayerMask counterLayerMask;
 
-		public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
-		public event UnityAction<Vector3> OnPickedSomething;
-
-		public class OnSelectedCounterChangedEventArgs : EventArgs
-		{
-			public BaseCounter selectedCounter;
-		}
+		public event UnityAction<BaseCounter> OnSelectedCounterChanged;
+		public event UnityAction<Vector3> OnPickedSomething; // picked object position
+		public static event UnityAction OnAnyPlayerSpawned;
+		public static event UnityAction<Vector3> OnAnyPlayerPickedSomething;
 
 		private void Start()
 		{
@@ -45,9 +46,17 @@ namespace Gameplay
 			GameInput.OnInteractAltAction += OnInteractAltAction;
 		}
 
+		public override void OnNetworkSpawn()
+		{
+			if (IsOwner)
+				LocalInstance = this;
+			base.OnNetworkSpawn();
+			OnAnyPlayerSpawned?.Invoke();
+		}
+
 		private void Update()
 		{
-			if(!IsOwner) return;
+			if (!IsOwner) return;
 			HandleInteractions();
 		}
 
@@ -91,7 +100,7 @@ namespace Gameplay
 		private void SetSelectedCounter(BaseCounter selectedCounter)
 		{
 			this.selectedCounter = selectedCounter;
-			OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs { selectedCounter = selectedCounter });
+			OnSelectedCounterChanged?.Invoke(selectedCounter);
 		}
 	}
 }

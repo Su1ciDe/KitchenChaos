@@ -62,7 +62,7 @@ namespace UI
 			btnGamepadInteractAlt.onClick.AddListener(() => RebindBinding(GameInput.Binding.Gamepad_InteractAlt));
 			btnGamepadPause.onClick.AddListener(() => RebindBinding(GameInput.Binding.Gamepad_Pause));
 
-			soundEffectSlider.value = SoundManager.Instance.Volume * 10;
+			soundEffectSlider.value = SoundManager.Instance.CurrentVolume * 10;
 			musicSlider.value = MusicManager.Instance.Volume * 10;
 
 			GameManager.Instance.OnGameUnpaused += OnGameUnpaused;
