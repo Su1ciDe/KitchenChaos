@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using KitchenObjects;
 using ScriptableObjects;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 using Utility;
 
 namespace Managers
 {
-	public class DeliveryManager : Singleton<DeliveryManager>
+	public class DeliveryManager : NetworkBehaviour
 	{
+		public static DeliveryManager Instance { get; private set; }
+
 		[SerializeField] private RecipeListSO recipeListSO;
 
 		public List<RecipeSO> WaitingRecipeSOs { get; } = new List<RecipeSO>();
@@ -25,19 +28,33 @@ namespace Managers
 		public event UnityAction<Vector3> OnRecipeSuccess; // plate position
 		public event UnityAction<Vector3> OnRecipeFail; // plate position
 
+		private void Awake()
+		{
+			Instance = this;
+		}
+
 		private void Update()
 		{
+			if (!IsServer) return;
+
 			spawnRecipeTimer -= Time.deltaTime;
 			if (!(spawnRecipeTimer <= 0)) return;
 
 			spawnRecipeTimer = spawnRecipeTimerMax;
 			if (GameManager.Instance.IsPlaying && WaitingRecipeSOs.Count < waitingRecipeMax)
 			{
-				var waitingRecipeSo = recipeListSO.RecipeSOs[Random.Range(0, recipeListSO.RecipeSOs.Count)];
-				WaitingRecipeSOs.Add(waitingRecipeSo);
-
-				OnRecipeSpawned?.Invoke();
+				int waitingRecipeSOIndex = Random.Range(0, recipeListSO.RecipeSOs.Count);
+				SpawnNewWaitingRecipeClientRpc(waitingRecipeSOIndex);
 			}
+		}
+
+		[ClientRpc]
+		private void SpawnNewWaitingRecipeClientRpc(int waitingRecipeSOIndex)
+		{
+			var waitingRecipeSO = recipeListSO.RecipeSOs[waitingRecipeSOIndex];
+			WaitingRecipeSOs.Add(waitingRecipeSO);
+
+			OnRecipeSpawned?.Invoke();
 		}
 
 		public void DeliverRecipe(Plate plate)
@@ -68,17 +85,41 @@ namespace Managers
 
 					if (plateContentMatchesRecipe)
 					{
-						successfulRecipesAmount++;
-
-						WaitingRecipeSOs.RemoveAt(i);
-						OnRecipeCompleted?.Invoke();
-						OnRecipeSuccess?.Invoke(plate.transform.position);
+						DeliverCorrectRecipeServerRpc(i, plate.transform.position);
 						return;
 					}
 				}
 			}
 
-			OnRecipeFail?.Invoke(plate.transform.position);
+			DeliverIncorrectRecipeServerRpc(plate.transform.position);
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		private void DeliverCorrectRecipeServerRpc(int waitingRecipeSOIndex, Vector3 platePosition)
+		{
+			DeliverCorrectRecipeClientRpc(waitingRecipeSOIndex, platePosition);
+		}
+
+		[ClientRpc]
+		private void DeliverCorrectRecipeClientRpc(int waitingRecipeSOIndex, Vector3 platePosition)
+		{
+			successfulRecipesAmount++;
+
+			WaitingRecipeSOs.RemoveAt(waitingRecipeSOIndex);
+			OnRecipeCompleted?.Invoke();
+			OnRecipeSuccess?.Invoke(platePosition);
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		private void DeliverIncorrectRecipeServerRpc(Vector3 platePosition)
+		{
+			DeliverIncorrectRecipeClientRpc(platePosition);
+		}
+
+		[ClientRpc]
+		private void DeliverIncorrectRecipeClientRpc(Vector3 platePosition)
+		{
+			OnRecipeFail?.Invoke(platePosition);
 		}
 	}
 }
