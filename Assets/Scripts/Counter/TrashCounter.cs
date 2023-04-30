@@ -1,4 +1,5 @@
 ﻿using Gameplay;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -10,12 +11,22 @@ namespace Counter
 
 		public override void Interact(Player player)
 		{
-			if (player.HasKitchenObject)
-			{
-				player.KitchenObject.DestroySelf();
+			if (!player.HasKitchenObject) return;
 
-				OnAnyObjectTrashed?.Invoke(transform.position);
-			}
+			KitchenObjects.KitchenObject.DestroyKitchenObject(player.KitchenObject);
+			InteractLogicServerRpc();
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		private void InteractLogicServerRpc()
+		{
+			InteractLogicClientRpc();
+		}
+
+		[ClientRpc]
+		private void InteractLogicClientRpc()
+		{
+			OnAnyObjectTrashed?.Invoke(transform.position);
 		}
 	}
 }

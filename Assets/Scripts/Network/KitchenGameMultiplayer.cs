@@ -1,4 +1,5 @@
 ﻿using Interfaces;
+using KitchenObjects;
 using ScriptableObjects;
 using Unity.Netcode;
 using UnityEngine;
@@ -41,6 +42,34 @@ namespace Network
 		private KitchenObjectSO GetKitchenObjectSOAt(int index)
 		{
 			return kitchenObjectListSO.KitchenObjectSoList[index];
+		}
+
+		public void DestroyKitchenObject(KitchenObject kitchenObject)
+		{
+			DestroyKitchenObjectServerRpc(kitchenObject.NetworkObject);
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		private void DestroyKitchenObjectServerRpc(NetworkObjectReference kitchenObjectNetworkObjectReference)
+		{
+			if (kitchenObjectNetworkObjectReference.TryGet(out NetworkObject kitchenObjectNetworkObject))
+			{
+				if (kitchenObjectNetworkObject.TryGetComponent(out KitchenObject kitchenObject))
+				{
+					ClearKitchenObjectOnParentClientRpc(kitchenObjectNetworkObjectReference);
+					kitchenObject.DestroySelf();
+				}
+			}
+		}
+
+		[ClientRpc]
+		private void ClearKitchenObjectOnParentClientRpc(NetworkObjectReference kitchenObjectNetworkObjectReference)
+		{
+			if (kitchenObjectNetworkObjectReference.TryGet(out NetworkObject kitchenObjectNetworkObject))
+			{
+				if (kitchenObjectNetworkObject.TryGetComponent(out KitchenObject kitchenObject))
+					kitchenObject.ClearKitchenObjectOnParent();
+			}
 		}
 	}
 }

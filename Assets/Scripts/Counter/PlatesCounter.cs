@@ -73,12 +73,12 @@ namespace Counter
 				KitchenObject.SpawnKitchenObject(plateKitchenObjectSO, player);
 				if (((Plate)player.KitchenObject).TryAddIngredient(kitchenObjectAtHand.GetKitchenObjectSO()))
 				{
-					Destroy(kitchenObjectAtHand.gameObject);
+					KitchenObject.DestroyKitchenObject(kitchenObjectAtHand);
 					InteractLogicServerRpc();
 				}
 				else
 				{
-					Destroy(player.KitchenObject.gameObject);
+					KitchenObject.DestroyKitchenObject(player.KitchenObject);
 					player.KitchenObject = kitchenObjectAtHand;
 				}
 			}

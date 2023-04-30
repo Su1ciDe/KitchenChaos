@@ -28,13 +28,23 @@ namespace KitchenObjects
 
 		public void DestroySelf()
 		{
-			kitchenObjectParent = null;
+			
 			Destroy(gameObject);
+		}
+
+		public void ClearKitchenObjectOnParent()
+		{
+			kitchenObjectParent = null;
 		}
 
 		public static void SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)
 		{
 			KitchenGameMultiplayer.Instance.SpawnKitchenObject(kitchenObjectSO, kitchenObjectParent);
+		}
+
+		public static void DestroyKitchenObject(KitchenObject kitchenObject)
+		{
+			KitchenGameMultiplayer.Instance.DestroyKitchenObject(kitchenObject);
 		}
 
 		[ServerRpc(RequireOwnership = false)]
