@@ -47,6 +47,7 @@ namespace Gameplay
 
 		private void Update()
 		{
+			if(!IsOwner) return;
 			HandleInteractions();
 		}
 

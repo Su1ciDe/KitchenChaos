@@ -5662,6 +5662,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4844316182991342303, guid: 2da3dcc22749e7f4280737786d898334,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4844785881582304729, guid: 2da3dcc22749e7f4280737786d898334,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -5860,7 +5865,7 @@ PrefabInstance:
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334,
         type: 3}
@@ -12574,7 +12579,7 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1691221789}
-    PlayerPrefab: {fileID: 6214663674971228325, guid: c8151c1f0058ce446a9c97fbf5bd6e63,
+    PlayerPrefab: {fileID: 5633373582580848421, guid: c8151c1f0058ce446a9c97fbf5bd6e63,
       type: 3}
     NetworkPrefabs: []
     TickRate: 32
@@ -17136,8 +17141,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f6748e73aa14ebaaec111b0660fac55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  btnHost: {fileID: 0}
-  btnClient: {fileID: 0}
+  btnHost: {fileID: 1431061598}
+  btnClient: {fileID: 144900128}
 --- !u!1 &2139125254
 GameObject:
   m_ObjectHideFlags: 0
