@@ -102,5 +102,7 @@ namespace Gameplay
 			this.selectedCounter = selectedCounter;
 			OnSelectedCounterChanged?.Invoke(selectedCounter);
 		}
+
+		public NetworkObject GetNetworkObject() => NetworkObject;
 	}
 }

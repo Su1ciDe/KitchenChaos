@@ -1,12 +1,13 @@
 ﻿using Gameplay;
 using Interfaces;
 using KitchenObjects;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Counter
 {
-	public class BaseCounter : MonoBehaviour, IKitchenObjectParent
+	public class BaseCounter : NetworkBehaviour, IKitchenObjectParent
 	{
 		public bool HasKitchenObject => KitchenObject;
 
@@ -33,5 +34,7 @@ namespace Counter
 		public virtual void InteractAlternate(Player player)
 		{
 		}
+
+		public NetworkObject GetNetworkObject() => NetworkObject;
 	}
 }
