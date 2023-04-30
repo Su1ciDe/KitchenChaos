@@ -36,7 +36,7 @@ namespace Counter
 
 		private void OnSelectedCounterChanged(BaseCounter selectedCounter)
 		{
-			if (selectedCounter.Equals(clearCounter))
+			if (selectedCounter && selectedCounter.Equals(clearCounter))
 				Show();
 			else
 				Hide();
