@@ -8,14 +8,11 @@ namespace Counter
 	{
 		public override void Interact(Player player)
 		{
-			if (player.HasKitchenObject)
-			{
-				if (player.KitchenObject is Plate plate)
-				{
-					DeliveryManager.Instance.DeliverRecipe(plate);
-					plate.DestroySelf();
-				}
-			}
+			if (!player.HasKitchenObject) return;
+			if (player.KitchenObject is not Plate plate) return;
+
+			DeliveryManager.Instance.DeliverRecipe(plate);
+			KitchenObject.DestroyKitchenObject(plate);
 		}
 	}
 }
