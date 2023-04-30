@@ -34,12 +34,12 @@ namespace Network
 					kitchenObj.KitchenObjectParent = kitchenObjectParent;
 		}
 
-		private int GetKitchenObjectSOIndex(KitchenObjectSO kitchenObjectSO)
+		public int GetKitchenObjectSOIndex(KitchenObjectSO kitchenObjectSO)
 		{
 			return kitchenObjectListSO.KitchenObjectSoList.IndexOf(kitchenObjectSO);
 		}
 
-		private KitchenObjectSO GetKitchenObjectSOAt(int index)
+		public KitchenObjectSO GetKitchenObjectSOAt(int index)
 		{
 			return kitchenObjectListSO.KitchenObjectSoList[index];
 		}
