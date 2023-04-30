@@ -1,7 +1,9 @@
 ﻿using Gameplay;
 using Interfaces;
+using KitchenObjects;
 using Managers;
 using ScriptableObjects;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -28,6 +30,7 @@ namespace Counter
 
 		private void Countdown()
 		{
+			if (!IsServer) return;
 			if (!GameManager.Instance.IsPlaying || platesSpawnedAmount >= platesSpawnedAmountMax) return;
 
 			spawnPlateTimer += Time.deltaTime;
@@ -35,23 +38,63 @@ namespace Counter
 			if (spawnPlateTimer > spawnPlateTimeMax)
 			{
 				spawnPlateTimer = 0;
-				platesSpawnedAmount++;
-				OnPlateSpawned?.Invoke();
+
+				SpawnPlateServerRpc();
 			}
+		}
+
+		[ServerRpc]
+		private void SpawnPlateServerRpc()
+		{
+			SpawnPlateClientRpc();
+		}
+
+		[ClientRpc]
+		private void SpawnPlateClientRpc()
+		{
+			platesSpawnedAmount++;
+			OnPlateSpawned?.Invoke();
 		}
 
 		public override void Interact(Player player)
 		{
 			if (!player.HasKitchenObject)
 			{
-				if (platesSpawnedAmount > 0)
-				{
-					platesSpawnedAmount--;
+				if (platesSpawnedAmount <= 0) return;
 
-					KitchenObjects.KitchenObject.SpawnKitchenObject(plateKitchenObjectSO, player);
-					OnPlateRemoved?.Invoke();
+				KitchenObject.SpawnKitchenObject(plateKitchenObjectSO, player);
+
+				InteractLogicServerRpc();
+			}
+			else if (player.KitchenObject is not Plate)
+			{
+				if (platesSpawnedAmount <= 0) return;
+				var kitchenObjectAtHand = player.KitchenObject;
+				KitchenObject.SpawnKitchenObject(plateKitchenObjectSO, player);
+				if (((Plate)player.KitchenObject).TryAddIngredient(kitchenObjectAtHand.GetKitchenObjectSO()))
+				{
+					Destroy(kitchenObjectAtHand.gameObject);
+					InteractLogicServerRpc();
+				}
+				else
+				{
+					Destroy(player.KitchenObject.gameObject);
+					player.KitchenObject = kitchenObjectAtHand;
 				}
 			}
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		private void InteractLogicServerRpc()
+		{
+			InteractLogicClientRpc();
+		}
+
+		[ClientRpc]
+		private void InteractLogicClientRpc()
+		{
+			platesSpawnedAmount--;
+			OnPlateRemoved?.Invoke();
 		}
 	}
 }

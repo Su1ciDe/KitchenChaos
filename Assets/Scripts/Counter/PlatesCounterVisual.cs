@@ -10,7 +10,7 @@ namespace Counter
 
 		private List<GameObject> spawnedPlates = new List<GameObject>();
 
-		private float offset = .1f;
+		private const float OFFSET = .1f;
 
 		private void Start()
 		{
@@ -29,7 +29,7 @@ namespace Counter
 		private void OnPlateSpawned()
 		{
 			var plate = Instantiate(plateVisualPrefab, counterTopPoint);
-			plate.localPosition = new Vector3(0, offset * spawnedPlates.Count, 0);
+			plate.localPosition = new Vector3(0, OFFSET * spawnedPlates.Count, 0);
 
 			spawnedPlates.Add(plate.gameObject);
 		}
