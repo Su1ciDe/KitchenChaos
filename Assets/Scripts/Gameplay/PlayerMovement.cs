@@ -30,8 +30,28 @@ namespace Gameplay
 		{
 			var moveDistance = moveSpeed * Time.deltaTime;
 
-			if (Physics.CapsuleCastNonAlloc(transform.position, transform.position + playerHeight * Vector3.up, playerRadius, moveDir, results, moveDistance) <= 0)
+			bool canMove = Physics.CapsuleCastNonAlloc(transform.position, transform.position + playerHeight * Vector3.up, playerRadius, moveDir, results, moveDistance) <= 0;
+			if (!canMove)
+			{
+				var moveDirX = new Vector3(moveDir.x, 0, 0).normalized;
+				canMove = moveDir.x is < -.5f or > .5f && Physics.CapsuleCastNonAlloc(transform.position, transform.position + playerHeight * Vector3.up,
+					playerRadius, moveDirX, results, moveDistance) <= 0;
+				if (canMove)
+					moveDir = moveDirX;
+				else
+				{
+					var moveDirZ = new Vector3(0, 0, moveDir.z).normalized;
+					canMove = moveDir.z is < -.5f or > .5f && Physics.CapsuleCastNonAlloc(transform.position, transform.position + playerHeight * Vector3.up,
+						playerRadius, moveDirZ, results, moveDistance) <= 0;
+					if (canMove)
+						moveDir = moveDirZ;
+				}
+			}
+
+			if (canMove)
+			{
 				transform.position += moveDistance * moveDir;
+			}
 
 			transform.forward = Vector3.Slerp(transform.forward, moveDir, rotateDamping * Time.deltaTime);
 
