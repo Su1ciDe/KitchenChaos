@@ -25,7 +25,7 @@ namespace Managers
 			DeliveryManager.Instance.OnRecipeSuccess += OnRecipeSuccess;
 			DeliveryManager.Instance.OnRecipeFail += OnRecipeFailed;
 			CuttingCounter.OnAnyCut += OnCut;
-			Player.Instance.OnPickedSomething += OnPlayerPickedSomething;
+			// Player.Instance.OnPickedSomething += OnPlayerPickedSomething;
 			BaseCounter.OnAnyObjectPlaced += CounterOnAnyObjectPlaced;
 			TrashCounter.OnAnyObjectTrashed += OnAnyObjectTrashed;
 		}

@@ -7,7 +7,7 @@ namespace Gameplay
 	{
 		[SerializeField] private float footstepVolume = .5f;
 
-		private Player player => Player.Instance;
+		private Player player;
 		private PlayerMovement playerMovement;
 
 		private float footstepTimer;
@@ -15,6 +15,7 @@ namespace Gameplay
 
 		private void Awake()
 		{
+			player = GetComponent<Player>();
 			playerMovement = player.GetComponent<PlayerMovement>();
 		}
 

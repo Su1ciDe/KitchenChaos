@@ -8,11 +8,7 @@ namespace Gameplay
 		[SerializeField] private float rotateDamping = 10;
 		[SerializeField] private float playerRadius = .7f;
 		[SerializeField] private float playerHeight = 2;
-
-		[Space]
-		[Space]
-		[SerializeField] private GameInput gameInput;
-
+		
 		public bool IsWalking => isWalking;
 		private bool isWalking;
 
@@ -20,7 +16,7 @@ namespace Gameplay
 
 		private void Update()
 		{
-			var inputVector = gameInput.GetMovementVectorNormalized();
+			var inputVector = GameInput.Instance.GetMovementVectorNormalized();
 			var moveDir = new Vector3(inputVector.x, 0, inputVector.y);
 
 			Move(moveDir);

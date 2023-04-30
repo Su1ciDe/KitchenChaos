@@ -3,13 +3,14 @@ using Counter;
 using Interfaces;
 using KitchenObjects;
 using Managers;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 using Utility;
 
 namespace Gameplay
 {
-	public class Player : Singleton<Player>, IKitchenObjectParent
+	public class Player : NetworkBehaviour, IKitchenObjectParent
 	{
 		public bool HasKitchenObject => KitchenObject;
 
