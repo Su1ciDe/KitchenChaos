@@ -1,14 +1,14 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
 namespace Gameplay
 {
-	public class PlayerAnimator : MonoBehaviour
+	public class PlayerAnimator : NetworkBehaviour
 	{
 		[SerializeField] private PlayerMovement playerMovement;
 
 		private Animator animator;
-
-		private const string IS_WALKING = "IsWalking";
+		private static readonly int isWalking = Animator.StringToHash("IsWalking");
 
 		private void Awake()
 		{
@@ -17,7 +17,8 @@ namespace Gameplay
 
 		private void Update()
 		{
-			animator.SetBool(IS_WALKING, playerMovement.IsWalking);
+			if (!IsOwner) return;
+			animator.SetBool(isWalking, playerMovement.IsWalking);
 		}
 	}
 }
