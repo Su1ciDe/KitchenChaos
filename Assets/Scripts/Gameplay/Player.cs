@@ -51,11 +51,14 @@ namespace Gameplay
 		{
 			if (IsOwner)
 				LocalInstance = this;
-			
+
 			base.OnNetworkSpawn();
-			
+
 			transform.position = KitchenGameMultiplayer.Instance.PlayerSpawnPositions[(int)OwnerClientId];
 			OnAnyPlayerSpawned?.Invoke();
+
+			if (IsServer)
+				NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
 		}
 
 		private void Update()
@@ -108,5 +111,13 @@ namespace Gameplay
 		}
 
 		public NetworkObject GetNetworkObject() => NetworkObject;
+
+		private void OnClientDisconnected(ulong clientId)
+		{
+			if (clientId.Equals(OwnerClientId) && HasKitchenObject)
+			{
+				KitchenObject.DestroyKitchenObject(KitchenObject);
+			}
+		}
 	}
 }

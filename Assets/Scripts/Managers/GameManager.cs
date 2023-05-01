@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Gameplay;
 using Unity.Netcode;
@@ -60,7 +61,11 @@ namespace Managers
 			base.OnNetworkSpawn();
 			state.OnValueChanged += OnStateValueChanged;
 			isGamePaused.OnValueChanged += OnPauseValueChanged;
+			
+			if(IsServer)
+				NetworkManager.Singleton.OnClientDisconnectCallback +=OnClientDisconnected;
 		}
+
 
 		private void Update()
 		{
@@ -203,6 +208,18 @@ namespace Managers
 
 			// All players are unpaused
 			isGamePaused.Value = false;
+		}
+		
+		
+		private void OnClientDisconnected(ulong clientId)
+		{
+			StartCoroutine(TestGamePausedStateCoroutine());
+		}
+
+		private IEnumerator TestGamePausedStateCoroutine()
+		{
+			yield return null;
+			TestGamePausedState();
 		}
 	}
 }

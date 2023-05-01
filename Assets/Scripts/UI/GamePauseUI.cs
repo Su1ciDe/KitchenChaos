@@ -1,4 +1,5 @@
 ﻿using Managers;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 using Utility;
@@ -33,6 +34,7 @@ namespace UI
 
 		private void ClickMainMenu()
 		{
+			NetworkManager.Singleton.Shutdown();
 			Loader.Load(Loader.Scenes.MainMenu);
 		}
 

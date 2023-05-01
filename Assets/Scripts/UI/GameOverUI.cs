@@ -1,16 +1,27 @@
 ﻿using Managers;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
+using Utility;
 
 namespace UI
 {
 	public class GameOverUI : BaseUI
 	{
 		[SerializeField] private TMP_Text txtRecipesDelivered;
+		[SerializeField] private Button playAgainButton;
 
 		private void Start()
 		{
+			playAgainButton.onClick.AddListener(PlayAgain);
 			Hide();
+		}
+
+		private void PlayAgain()
+		{
+			NetworkManager.Singleton.Shutdown();
+			Loader.Load(Loader.Scenes.MainMenu);
 		}
 
 		private void OnEnable()
