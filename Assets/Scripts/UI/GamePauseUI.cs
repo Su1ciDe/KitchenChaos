@@ -22,8 +22,8 @@ namespace UI
 
 		private void OnEnable()
 		{
-			GameManager.Instance.OnGamePaused += OnGamePaused;
-			GameManager.Instance.OnGameUnpaused += OnGameUnpaused;
+			GameManager.Instance.OnLocalGamePaused += OnLocalGamePaused;
+			GameManager.Instance.OnLocalGameUnpaused += OnLocalGameUnpaused;
 		}
 
 		private void ClickResume()
@@ -42,12 +42,12 @@ namespace UI
 			OptionsUI.Instance.Show(Show);
 		}
 
-		private void OnGameUnpaused()
+		private void OnLocalGameUnpaused()
 		{
 			Hide();
 		}
 
-		private void OnGamePaused()
+		private void OnLocalGamePaused()
 		{
 			Show();
 		}

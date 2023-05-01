@@ -65,14 +65,14 @@ namespace UI
 			soundEffectSlider.value = SoundManager.Instance.CurrentVolume * 10;
 			musicSlider.value = MusicManager.Instance.Volume * 10;
 
-			GameManager.Instance.OnGameUnpaused += OnGameUnpaused;
+			GameManager.Instance.OnLocalGameUnpaused += OnLocalGameUnpaused;
 
 			UpdateVisuals();
 			HidePressToRebindPanel();
 			Hide();
 		}
 
-		private void OnGameUnpaused()
+		private void OnLocalGameUnpaused()
 		{
 			Hide();
 		}
