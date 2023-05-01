@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using Network;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,13 +18,13 @@ namespace UI
 
 		private void HostStartClicked()
 		{
-			NetworkManager.Singleton.StartHost();
+			KitchenGameMultiplayer.Instance.StartHost();
 			Hide();
 		}
 
 		private void ClientStartClicked()
 		{
-			NetworkManager.Singleton.StartClient();
+			KitchenGameMultiplayer.Instance.StartClient();
 			Hide();
 		}
 

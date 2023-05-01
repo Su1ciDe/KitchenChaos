@@ -13,6 +13,7 @@ namespace Managers
 		public static GameManager Instance { get; private set; }
 
 		public bool IsPlaying => state.Value == State.GamePlaying;
+		public bool IsWaitingToStart => state.Value == State.WaitingToStart;
 		public bool IsLocalPlayerReady { get; private set; }
 
 		[SerializeField] private float gamePlayingTimerMax = 10;

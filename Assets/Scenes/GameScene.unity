@@ -2782,7 +2782,7 @@ GameObject:
   - component: {fileID: 301105003}
   - component: {fileID: 301105004}
   m_Layer: 5
-  m_Name: HostDisconnect
+  m_Name: HostDisconnectUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2820,11 +2820,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 301105002}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2247abc29f64d0392a77afce0825104, type: 3}
+  m_Script: {fileID: 11500000, guid: 0b4430b1391a41b69c74884c8fbb3b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  txtRecipesDelivered: {fileID: 0}
-  playAgainButton: {fileID: 0}
+  playAgainButton: {fileID: 1139765743}
 --- !u!1 &304848458
 GameObject:
   m_ObjectHideFlags: 0
@@ -14021,7 +14020,7 @@ MonoBehaviour:
       OverridingTargetPrefab: {fileID: 0}
     TickRate: 32
     ClientConnectionBufferTimeout: 10
-    ConnectionApproval: 0
+    ConnectionApproval: 1
     ConnectionData: 
     EnableTimeResync: 0
     TimeResyncInterval: 30

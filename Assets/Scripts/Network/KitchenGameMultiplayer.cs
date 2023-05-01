@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Interfaces;
 using KitchenObjects;
+using Managers;
 using ScriptableObjects;
 using Unity.Netcode;
 using UnityEngine;
@@ -19,6 +20,30 @@ namespace Network
 		private void Awake()
 		{
 			Instance = this;
+		}
+
+		public void StartHost()
+		{
+			NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
+			NetworkManager.Singleton.StartHost();
+		}
+
+		public void StartClient()
+		{
+			NetworkManager.Singleton.StartClient();
+		}
+
+		private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+		{
+			if (GameManager.Instance.IsWaitingToStart)
+			{
+				response.Approved = true;
+				response.CreatePlayerObject = true;
+			}
+			else
+			{
+				response.Approved = false;
+			}
 		}
 
 		public void SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)
