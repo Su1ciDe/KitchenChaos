@@ -1,4 +1,5 @@
-﻿using Interfaces;
+﻿using System.Collections.Generic;
+using Interfaces;
 using KitchenObjects;
 using ScriptableObjects;
 using Unity.Netcode;
@@ -11,6 +12,9 @@ namespace Network
 		public static KitchenGameMultiplayer Instance { get; private set; }
 
 		[SerializeField] private KitchenObjectListSO kitchenObjectListSO;
+		[Space]
+		[SerializeField] private List<Vector3> playerSpawnPositions = new List<Vector3>();
+		public List<Vector3> PlayerSpawnPositions => playerSpawnPositions;
 
 		private void Awake()
 		{

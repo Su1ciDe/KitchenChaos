@@ -3,6 +3,7 @@ using Counter;
 using Interfaces;
 using KitchenObjects;
 using Managers;
+using Network;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
@@ -50,7 +51,10 @@ namespace Gameplay
 		{
 			if (IsOwner)
 				LocalInstance = this;
+			
 			base.OnNetworkSpawn();
+			
+			transform.position = KitchenGameMultiplayer.Instance.PlayerSpawnPositions[(int)OwnerClientId];
 			OnAnyPlayerSpawned?.Invoke();
 		}
 
