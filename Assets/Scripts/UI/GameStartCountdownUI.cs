@@ -17,6 +17,11 @@ namespace UI
 			animator = GetComponent<Animator>();
 		}
 
+		private void Start()
+		{			Hide();
+
+		}
+
 		private void OnEnable()
 		{
 			GameManager.Instance.OnStateChanged += OnStateChanged;

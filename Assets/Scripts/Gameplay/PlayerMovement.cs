@@ -9,7 +9,7 @@ namespace Gameplay
 		[SerializeField] private float moveSpeed = 7;
 		[SerializeField] private float rotateDamping = 10;
 		[SerializeField] private float playerRadius = .7f;
-		[SerializeField] private float playerHeight = 2;
+		// [SerializeField] private float playerHeight = 2;
 
 		[Space]
 		[SerializeField] private LayerMask collisionsLayerMask;

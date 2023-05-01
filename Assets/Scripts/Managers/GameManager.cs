@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using Gameplay;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
-using Utility;
 
 namespace Managers
 {
-	public class GameManager : Singleton<GameManager>
+	public class GameManager : NetworkBehaviour
 	{
-		public bool IsPlaying => state == State.GamePlaying;
+		public static GameManager Instance { get; private set; }
 
-		[SerializeField] private float countdownToStartTimer = 3;
+		public bool IsPlaying => state.Value == State.GamePlaying;
+		public bool IsLocalPlayerReady { get; private set; }
+
 		[SerializeField] private float gamePlayingTimerMax = 10;
-		private float gamePlayingTimer;
+		private NetworkVariable<float> countdownToStartTimer = new NetworkVariable<float>(3);
+		private NetworkVariable<float> gamePlayingTimer = new NetworkVariable<float>(0);
 
 		public enum State
 		{
@@ -22,47 +26,57 @@ namespace Managers
 			GameOver
 		}
 
-		private State state;
+		private Dictionary<ulong, bool> playersReadyDictionary;
+
+		private NetworkVariable<State> state = new NetworkVariable<State>(State.WaitingToStart);
 		private bool isGamePaused;
 
 		public event UnityAction<State> OnStateChanged;
 		public event UnityAction OnGamePaused;
 		public event UnityAction OnGameUnpaused;
+		public event UnityAction OnLocalPlayerReadyChanged;
 
 		private void Awake()
 		{
-			state = State.WaitingToStart;
+			Instance = this;
+
+			playersReadyDictionary = new Dictionary<ulong, bool>();
 		}
 
 		private void Start()
 		{
-			OnStateChanged?.Invoke(state);
 			GameInput.OnPauseAction += OnPause;
 			GameInput.OnInteractAction += OnInteractAction;
 		}
 
+		public override void OnNetworkSpawn()
+		{
+			base.OnNetworkSpawn();
+			state.OnValueChanged += OnStateValueChanged;
+		}
+
 		private void Update()
 		{
-			switch (state)
+			if (!IsServer) return;
+
+			switch (state.Value)
 			{
 				case State.WaitingToStart:
 					break;
 				case State.CountdownToStart:
-					countdownToStartTimer -= Time.deltaTime;
-					if (countdownToStartTimer < 0f)
+					countdownToStartTimer.Value -= Time.deltaTime;
+					if (countdownToStartTimer.Value < 0f)
 					{
-						state = State.GamePlaying;
-						gamePlayingTimer = gamePlayingTimerMax;
-						OnStateChanged?.Invoke(state);
+						state.Value = State.GamePlaying;
+						gamePlayingTimer.Value = gamePlayingTimerMax;
 					}
 
 					break;
 				case State.GamePlaying:
-					gamePlayingTimer -= Time.deltaTime;
-					if (gamePlayingTimer < 0f)
+					gamePlayingTimer.Value -= Time.deltaTime;
+					if (gamePlayingTimer.Value < 0f)
 					{
-						state = State.GameOver;
-						OnStateChanged?.Invoke(state);
+						state.Value = State.GameOver;
 					}
 
 					break;
@@ -73,24 +87,52 @@ namespace Managers
 			}
 		}
 
+		private void OnStateValueChanged(State previousValue, State newValue)
+		{
+			OnStateChanged?.Invoke(state.Value);
+		}
+
 		private void OnInteractAction(object sender, EventArgs e)
 		{
-			if (state != State.WaitingToStart) return;
+			if (state.Value != State.WaitingToStart) return;
 
-			state = State.CountdownToStart;
-			OnStateChanged?.Invoke(state);
+			IsLocalPlayerReady = true;
+			OnLocalPlayerReadyChanged?.Invoke();
+			
+			SetPlayerReadyServerRpc();
 
 			GameInput.OnInteractAction -= OnInteractAction;
 		}
 
+		[ServerRpc(RequireOwnership = false)]
+		private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
+		{
+			// Handling the client id on server side to combat cheaters
+			playersReadyDictionary[serverRpcParams.Receive.SenderClientId] = true;
+
+			bool allClientsReady = true;
+			foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+			{
+				if (!playersReadyDictionary.ContainsKey(clientId) || !playersReadyDictionary[clientId])
+				{
+					// This player is not ready
+					allClientsReady = false;
+					break;
+				}
+			}
+
+			if (allClientsReady)
+				state.Value = State.CountdownToStart;
+		}
+
 		public float GetCountdownToStartTimer()
 		{
-			return countdownToStartTimer;
+			return countdownToStartTimer.Value;
 		}
 
 		public float GetGamePlayingTimerNormalized()
 		{
-			return 1 - (gamePlayingTimer / gamePlayingTimerMax);
+			return 1 - (gamePlayingTimer.Value / gamePlayingTimerMax);
 		}
 
 		private void OnPause(object sender, EventArgs e)

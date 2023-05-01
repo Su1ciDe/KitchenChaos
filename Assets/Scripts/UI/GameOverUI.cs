@@ -8,6 +8,11 @@ namespace UI
 	{
 		[SerializeField] private TMP_Text txtRecipesDelivered;
 
+		private void Start()
+		{
+			Hide();
+		}
+
 		private void OnEnable()
 		{
 			GameManager.Instance.OnStateChanged += OnStateChanged;

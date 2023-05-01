@@ -27,7 +27,13 @@ namespace UI
 		private void OnEnable()
 		{
 			GameInput.OnBindingRebound += OnBindingRebound;
-			GameManager.Instance.OnStateChanged += OnGameStateChanged;
+			GameManager.Instance.OnLocalPlayerReadyChanged += OnLocalPlayerReadyChanged;
+		}
+
+		private void OnLocalPlayerReadyChanged()
+		{
+			if (!GameManager.Instance.IsLocalPlayerReady) return;
+			Hide();
 		}
 
 		private void OnDisable()
@@ -52,13 +58,6 @@ namespace UI
 			gamepadInteractKeyText.SetText(GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Interact));
 			gamepadInteractAltKeyText.SetText(GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_InteractAlt));
 			gamepadPauseKeyText.SetText(GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Pause));
-		}
-
-		private void OnGameStateChanged(GameManager.State state)
-		{
-			if (state != GameManager.State.CountdownToStart) return;
-
-			Hide();
 		}
 	}
 }
