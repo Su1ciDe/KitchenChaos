@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Network;
 using ScriptableObjects;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -24,10 +26,23 @@ namespace KitchenObjects
 			}
 			else
 			{
-				kitchenObjectSOs.Add(kitchenObjectSO);
-				OnIngredientAdded?.Invoke(kitchenObjectSO);
+				AddIngredientServerRpc(KitchenGameMultiplayer.Instance.GetKitchenObjectSOIndex(kitchenObjectSO));
 				return true;
 			}
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		private void AddIngredientServerRpc(int kitchenObjectSOIndex)
+		{
+			AddIngredientClientRpc(kitchenObjectSOIndex);
+		}
+
+		[ClientRpc]
+		private void AddIngredientClientRpc(int kitchenObjectSOIndex)
+		{
+			var kitchenObjectSO = KitchenGameMultiplayer.Instance.GetKitchenObjectSOAt(kitchenObjectSOIndex);
+			kitchenObjectSOs.Add(kitchenObjectSO);
+			OnIngredientAdded?.Invoke(kitchenObjectSO);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using Gameplay;
 using KitchenObjects;
+using Network;
 
 namespace Counter
 {
@@ -25,14 +26,14 @@ namespace Counter
 					if (player.KitchenObject is Plate plate)
 					{
 						if (plate.TryAddIngredient(KitchenObject.GetKitchenObjectSO()))
-							KitchenObject.DestroySelf();
+							KitchenObject.DestroyKitchenObject(KitchenObject);
 					}
 					else
 					{
 						if (KitchenObject is Plate plateOnCounter)
 						{
 							if (plateOnCounter.TryAddIngredient(player.KitchenObject.GetKitchenObjectSO()))
-								player.KitchenObject.DestroySelf();
+								KitchenObject.DestroyKitchenObject(player.KitchenObject);
 						}
 					}
 				}
