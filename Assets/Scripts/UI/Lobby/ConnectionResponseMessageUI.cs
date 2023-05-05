@@ -3,6 +3,7 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using Utility;
 
 namespace UI.Lobby
 {
@@ -13,17 +14,14 @@ namespace UI.Lobby
 
 		private void Awake()
 		{
-			btnClose.onClick.AddListener(Hide);
+			btnClose.onClick.AddListener(CloseClicked);
 		}
 
 		private void Start()
 		{
-			Hide();
-		}
-
-		private void OnEnable()
-		{
 			KitchenGameMultiplayer.Instance.OnFailedToJoinGame += OnFailedToJoinGame;
+
+			Hide();
 		}
 
 		private void OnDestroy()
@@ -36,6 +34,12 @@ namespace UI.Lobby
 			Show();
 			string reason = NetworkManager.Singleton.DisconnectReason.Equals("") ? "Failed to connect!" : NetworkManager.Singleton.DisconnectReason;
 			txtMessage.SetText(reason);
+		}
+
+		private void CloseClicked()
+		{
+			Hide();
+			Loader.Load(Loader.Scenes.MainMenu);
 		}
 	}
 }

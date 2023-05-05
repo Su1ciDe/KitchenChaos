@@ -36,15 +36,25 @@ namespace Gameplay
 		[SerializeField] private Transform kitchenObjectPoint;
 		[SerializeField] private LayerMask counterLayerMask;
 
+		private PlayerVisual playerVisual;
+
 		public event UnityAction<BaseCounter> OnSelectedCounterChanged;
 		public event UnityAction<Vector3> OnPickedSomething; // picked object position
 		public static event UnityAction OnAnyPlayerSpawned;
 		public static event UnityAction<Vector3> OnAnyPlayerPickedSomething;
 
+		private void Awake()
+		{
+			playerVisual = GetComponentInChildren<PlayerVisual>();
+		}
+
 		private void Start()
 		{
 			GameInput.OnInteractAction += OnInteractAction;
 			GameInput.OnInteractAltAction += OnInteractAltAction;
+
+			var playerData = KitchenGameMultiplayer.Instance.GetPlayerDataFromClientId(OwnerClientId);
+			playerVisual.SetPlayerColor(KitchenGameMultiplayer.Instance.GetPlayerColor(playerData.ColorId));
 		}
 
 		public override void OnNetworkSpawn()
@@ -54,7 +64,7 @@ namespace Gameplay
 
 			base.OnNetworkSpawn();
 
-			transform.position = KitchenGameMultiplayer.Instance.PlayerSpawnPositions[(int)OwnerClientId];
+			transform.position = KitchenGameMultiplayer.Instance.PlayerSpawnPositions[KitchenGameMultiplayer.Instance.GetPlayerIndexFromClientId(OwnerClientId)];
 			OnAnyPlayerSpawned?.Invoke();
 
 			if (IsServer)

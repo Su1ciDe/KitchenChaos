@@ -15,7 +15,7 @@ namespace UI.Lobby
 			KitchenGameMultiplayer.Instance.OnFailedToJoinGame += OnFailedToJoinGame;
 		}
 
-		private void OnDestroy()
+		private void OnDisable()
 		{
 			KitchenGameMultiplayer.Instance.OnTryingToJoinGame -= OnTryingToJoinGame;
 			KitchenGameMultiplayer.Instance.OnFailedToJoinGame -= OnFailedToJoinGame;

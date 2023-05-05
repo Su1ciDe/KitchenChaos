@@ -1484,8 +1484,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9acfc2e6f4da48afb00746772c02f944, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  txtMessage: {fileID: 0}
-  btnClose: {fileID: 0}
+  txtMessage: {fileID: 674513531}
+  btnClose: {fileID: 1378419800}
 --- !u!1 &1799107482
 GameObject:
   m_ObjectHideFlags: 0
