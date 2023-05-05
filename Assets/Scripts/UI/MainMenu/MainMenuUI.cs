@@ -18,7 +18,7 @@ namespace UI.MainMenu
 
 		private void ClickPlay()
 		{
-			Loader.Load(Loader.Scenes.GameScene);
+			Loader.Load(Loader.Scenes.LobbyScene);
 		}
 
 		private void ClickQuit()
