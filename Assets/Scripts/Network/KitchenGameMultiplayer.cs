@@ -5,6 +5,9 @@ using Managers;
 using ScriptableObjects;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using Utility;
 
 namespace Network
 {
@@ -17,9 +20,15 @@ namespace Network
 		[SerializeField] private List<Vector3> playerSpawnPositions = new List<Vector3>();
 		public List<Vector3> PlayerSpawnPositions => playerSpawnPositions;
 
+		private const int MAX_PLAYERS_COUNT = 4;
+
+		public event UnityAction OnTryingToJoinGame;
+		public event UnityAction OnFailedToJoinGame;
+
 		private void Awake()
 		{
 			Instance = this;
+			DontDestroyOnLoad(gameObject);
 		}
 
 		public void StartHost()
@@ -30,20 +39,44 @@ namespace Network
 
 		public void StartClient()
 		{
+			OnTryingToJoinGame?.Invoke();
+
+			NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
 			NetworkManager.Singleton.StartClient();
+		}
+
+		private void OnClientDisconnected(ulong clientId)
+		{
+			OnFailedToJoinGame?.Invoke();
 		}
 
 		private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 		{
-			if (GameManager.Instance.IsWaitingToStart)
-			{
-				response.Approved = true;
-				response.CreatePlayerObject = true;
-			}
-			else
+			if (!SceneManager.GetActiveScene().name.Equals(Loader.Scenes.CharacterSelectScene.ToString()))
 			{
 				response.Approved = false;
+				response.Reason = "Game has already started!";
+				return;
 			}
+
+			if (NetworkManager.Singleton.ConnectedClientsIds.Count >= MAX_PLAYERS_COUNT)
+			{
+				response.Approved = false;
+				response.Reason = "Game has maximum amount of players!";
+				return;
+			}
+
+			response.Approved = true;
+
+			// if (GameManager.Instance.IsWaitingToStart)
+			// {
+			// 	response.Approved = true;
+			// 	response.CreatePlayerObject = true;
+			// }
+			// else
+			// {
+			// 	response.Approved = false;
+			// }
 		}
 
 		public void SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)

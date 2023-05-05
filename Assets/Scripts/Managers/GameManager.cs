@@ -5,6 +5,7 @@ using Gameplay;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace Managers
 {
@@ -16,6 +17,9 @@ namespace Managers
 		public bool IsWaitingToStart => state.Value == State.WaitingToStart;
 		public bool IsLocalPlayerReady { get; private set; }
 
+		[SerializeField] private Player playerPrefab;
+
+		[Space]
 		[SerializeField] private float gamePlayingTimerMax = 10;
 		private NetworkVariable<float> countdownToStartTimer = new NetworkVariable<float>(3);
 		private NetworkVariable<float> gamePlayingTimer = new NetworkVariable<float>(0);
@@ -62,11 +66,13 @@ namespace Managers
 			base.OnNetworkSpawn();
 			state.OnValueChanged += OnStateValueChanged;
 			isGamePaused.OnValueChanged += OnPauseValueChanged;
-			
-			if(IsServer)
-				NetworkManager.Singleton.OnClientDisconnectCallback +=OnClientDisconnected;
-		}
 
+			if (IsServer)
+			{
+				NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+				NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadEventCompleted;
+			}
+		}
 
 		private void Update()
 		{
@@ -117,6 +123,15 @@ namespace Managers
 			GameInput.OnInteractAction -= OnInteractAction;
 		}
 
+		private void OnSceneLoadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+		{
+			foreach (var clientsId in NetworkManager.Singleton.ConnectedClientsIds)
+			{
+				var player = Instantiate(playerPrefab);
+				player.NetworkObject.SpawnAsPlayerObject(clientsId, true);
+			}
+		}
+
 		[ServerRpc(RequireOwnership = false)]
 		private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
 		{
@@ -126,12 +141,10 @@ namespace Managers
 			bool allClientsReady = true;
 			foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
 			{
-				if (!playersReadyDictionary.ContainsKey(clientId) || !playersReadyDictionary[clientId])
-				{
-					// This player is not ready
-					allClientsReady = false;
-					break;
-				}
+				if (playersReadyDictionary.ContainsKey(clientId) && playersReadyDictionary[clientId]) continue;
+				// This player is not ready
+				allClientsReady = false;
+				break;
 			}
 
 			if (allClientsReady)
@@ -210,8 +223,7 @@ namespace Managers
 			// All players are unpaused
 			isGamePaused.Value = false;
 		}
-		
-		
+
 		private void OnClientDisconnected(ulong clientId)
 		{
 			StartCoroutine(TestGamePausedStateCoroutine());

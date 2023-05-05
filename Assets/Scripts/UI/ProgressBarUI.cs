@@ -23,7 +23,7 @@ namespace UI
 			Hide();
 		}
 
-		private void OnProgressChanged(float fillAmount, bool isAnimated = true)
+		private void OnProgressChanged(float fillAmount, bool isAnimated = false)
 		{
 			fillAmount = Mathf.Clamp01(fillAmount);
 			if (isAnimated)

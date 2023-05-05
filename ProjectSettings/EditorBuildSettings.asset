@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/LobbyScene.unity
+    guid: cae75449c1d1a024898c4a078c261efe
+  - enabled: 1
     path: Assets/Scenes/GameScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
@@ -14,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LoadingScene.unity
     guid: cb5029abf6fb2f54a9f2662bb526d3a0
+  - enabled: 1
+    path: Assets/Scenes/CharacterSelectScene.unity
+    guid: c1570c2ad5b9744449fe6407fc377e6a
   m_configObjects: {}
