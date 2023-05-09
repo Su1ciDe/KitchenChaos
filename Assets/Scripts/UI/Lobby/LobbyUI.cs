@@ -1,4 +1,5 @@
-﻿using Network;
+﻿using System.Collections.Generic;
+using Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,9 @@ namespace UI.Lobby
 		[Space]
 		[SerializeField] private TMP_InputField inputLobbyCode;
 		[SerializeField] private Button btnJoinViaCode;
+		[Header("Lobby List")]
+		[SerializeField] private ScrollRect scrollViewLobbyList;
+		[SerializeField] private LobbyButtonUI btnLobbyPrefab;
 		[Space]
 		[SerializeField] private LobbyCreateUI lobbyCreateUI;
 
@@ -30,6 +34,20 @@ namespace UI.Lobby
 		{
 			inputPlayerName.SetTextWithoutNotify(KitchenGameMultiplayer.Instance.PlayerName);
 			inputPlayerName.onValueChanged.AddListener(PlayerNameValueChanged);
+
+			KitchenLobby.Instance.OnLobbyListChanged += LobbyListChanged;
+
+			UpdateLobbyList(new List<Unity.Services.Lobbies.Models.Lobby>());
+		}
+
+		private void OnDestroy()
+		{
+			KitchenLobby.Instance.OnLobbyListChanged -= LobbyListChanged;
+		}
+
+		private void LobbyListChanged(List<Unity.Services.Lobbies.Models.Lobby> lobbyList)
+		{
+			UpdateLobbyList(lobbyList);
 		}
 
 		private void PlayerNameValueChanged(string playerName)
@@ -56,6 +74,18 @@ namespace UI.Lobby
 		private void JoinViaCodeClicked()
 		{
 			KitchenLobby.Instance.JoinByCode(inputLobbyCode.text);
+		}
+
+		private void UpdateLobbyList(List<Unity.Services.Lobbies.Models.Lobby> lobbyList)
+		{
+			foreach (Transform child in scrollViewLobbyList.content.transform)
+				Destroy(child.gameObject);
+
+			foreach (var lobby in lobbyList)
+			{
+				var lobbyButton = Instantiate(btnLobbyPrefab, scrollViewLobbyList.content.transform);
+				lobbyButton.SetLobby(lobby);
+			}
 		}
 	}
 }

@@ -32,6 +32,7 @@ namespace UI.CharacterSelect
 
 		private void ClickMainMenu()
 		{
+			KitchenLobby.Instance.LeaveLobby();
 			NetworkManager.Singleton.Shutdown();
 			Loader.Load(Loader.Scenes.MainMenu);
 		}
