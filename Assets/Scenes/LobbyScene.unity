@@ -1206,9 +1206,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4429770357844676539, guid: cdde2bf0d98c52c4abe9e5eeea5a6fd3,
         type: 3}
-      propertyPath: NetworkConfig.PlayerPrefab
+      propertyPath: NetworkConfig.Prefabs.NetworkPrefabsLists.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 11400000, guid: b4ac995863fbf39419a6820ac21ad8e3,
+        type: 2}
     - target: {fileID: 5037152138802180030, guid: cdde2bf0d98c52c4abe9e5eeea5a6fd3,
         type: 3}
       propertyPath: m_Name

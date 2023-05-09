@@ -61,7 +61,7 @@ namespace Network
 					new CreateLobbyOptions { IsPrivate = isPrivate });
 
 				KitchenGameMultiplayer.Instance.StartHost();
-				Loader.Load(Loader.Scenes.CharacterSelectScene);
+				Loader.LoadNetwork(Loader.Scenes.CharacterSelectScene);
 			}
 			catch (LobbyServiceException e)
 			{
