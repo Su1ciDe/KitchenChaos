@@ -12,6 +12,7 @@ namespace Utility
 	{
 		[SerializeField] private int playerIndex;
 		[Space]
+		[SerializeField] private TextMeshPro txtPlayerName;
 		[SerializeField] private TextMeshPro txtReady;
 		[SerializeField] private Button btnKick;
 
@@ -25,7 +26,9 @@ namespace Utility
 
 		private void Kick()
 		{
-			KitchenGameMultiplayer.Instance.KickPlayer(KitchenGameMultiplayer.Instance.GetPlayerDataFromIndex(playerIndex).ClientId);
+			var playerData = KitchenGameMultiplayer.Instance.GetPlayerDataFromIndex(playerIndex);
+			KitchenLobby.Instance.KickPlayer(playerData.PlayerId.ToString());
+			KitchenGameMultiplayer.Instance.KickPlayer(playerData.ClientId);
 		}
 
 		private void Start()
@@ -65,6 +68,7 @@ namespace Utility
 				var playerData = KitchenGameMultiplayer.Instance.GetPlayerDataFromIndex(playerIndex);
 				txtReady.gameObject.SetActive(CharacterSelectManager.Instance.IsPlayerReady(playerData.ClientId));
 				playerVisual.SetPlayerColor(KitchenGameMultiplayer.Instance.GetPlayerColor(playerData.ColorId));
+				txtPlayerName.SetText(playerData.PlayerName.ToString());
 			}
 			else
 				Hide();

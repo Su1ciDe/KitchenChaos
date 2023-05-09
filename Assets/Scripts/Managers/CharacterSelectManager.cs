@@ -50,6 +50,7 @@ namespace Managers
 
 		private void StartGame()
 		{
+			KitchenLobby.Instance.DeleteLobby();
 			Loader.LoadNetwork(Loader.Scenes.GameScene);
 		}
 

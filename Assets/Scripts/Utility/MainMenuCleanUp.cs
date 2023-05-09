@@ -13,6 +13,9 @@ namespace Utility
 
 			if (KitchenGameMultiplayer.Instance)
 				Destroy(KitchenGameMultiplayer.Instance.gameObject);
+
+			if (KitchenLobby.Instance)
+				Destroy(KitchenLobby.Instance.gameObject);
 		}
 	}
 }

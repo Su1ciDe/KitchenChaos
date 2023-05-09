@@ -54,7 +54,7 @@ namespace UI
 			Show();
 		}
 
-		protected override void Show()
+		public override void Show()
 		{
 			base.Show();
 			btnResume.Select();

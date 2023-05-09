@@ -37,7 +37,7 @@ namespace UI
 				Hide();
 		}
 
-		protected override void Show()
+		public override void Show()
 		{
 			txtRecipesDelivered.SetText(DeliveryManager.Instance.SuccessfulRecipesAmount.ToString());
 			base.Show();

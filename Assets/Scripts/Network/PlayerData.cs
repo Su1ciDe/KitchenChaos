@@ -1,5 +1,6 @@
 ﻿using System;
 using Unity.Netcode;
+using Unity.Collections;
 
 namespace Network
 {
@@ -7,16 +8,20 @@ namespace Network
 	{
 		public ulong ClientId;
 		public int ColorId;
+		public FixedString64Bytes PlayerName;
+		public FixedString64Bytes PlayerId;
 
-		public PlayerData(ulong clientId, int colorId = 0)
+		public PlayerData(ulong clientId, int colorId, FixedString64Bytes playerName)
 		{
 			ClientId = clientId;
 			ColorId = colorId;
+			PlayerName = playerName;
+			PlayerId = "";
 		}
 
 		public bool Equals(PlayerData other)
 		{
-			return ClientId == other.ClientId && ColorId == other.ColorId;
+			return ClientId == other.ClientId && ColorId == other.ColorId && PlayerName == other.PlayerName && PlayerId == other.PlayerId;
 		}
 
 		public override bool Equals(object obj)
@@ -33,6 +38,8 @@ namespace Network
 		{
 			serializer.SerializeValue(ref ClientId);
 			serializer.SerializeValue(ref ColorId);
+			serializer.SerializeValue(ref PlayerName);
+			serializer.SerializeValue(ref PlayerId);
 		}
 	}
 }

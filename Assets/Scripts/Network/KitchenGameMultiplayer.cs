@@ -3,6 +3,7 @@ using Interfaces;
 using KitchenObjects;
 using ScriptableObjects;
 using Unity.Netcode;
+using Unity.Services.Authentication;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -13,6 +14,12 @@ namespace Network
 	public class KitchenGameMultiplayer : NetworkBehaviour
 	{
 		public static KitchenGameMultiplayer Instance { get; private set; }
+
+		public string PlayerName
+		{
+			get => PlayerPrefs.GetString("PlayerNameMultiplayer", "Player");
+			set => PlayerPrefs.SetString("PlayerNameMultiplayer", value);
+		}
 
 		public List<Vector3> PlayerSpawnPositions => playerSpawnPositions;
 		public int PlayerColorsCount => playerColors.Count;
@@ -25,7 +32,7 @@ namespace Network
 
 		private NetworkList<PlayerData> playersData;
 
-		private const int MAX_PLAYERS_COUNT = 4;
+		public readonly int MAX_PLAYERS_COUNT = 4;
 
 		public event UnityAction OnTryingToJoinGame;
 		public event UnityAction OnFailedToJoinGame;
@@ -43,8 +50,8 @@ namespace Network
 		public void StartHost()
 		{
 			NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
-			NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
-			NetworkManager.Singleton.OnClientDisconnectCallback += OnServer_ClientDisconnected;
+			NetworkManager.Singleton.OnClientConnectedCallback += OnHost_ClientConnected;
+			NetworkManager.Singleton.OnClientDisconnectCallback += OnHost_ClientDisconnected;
 			NetworkManager.Singleton.StartHost();
 		}
 
@@ -52,13 +59,23 @@ namespace Network
 		{
 			OnTryingToJoinGame?.Invoke();
 
+			NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
 			NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
 			NetworkManager.Singleton.StartClient();
 		}
 
-		private void OnClientConnectedCallback(ulong clientId)
+		private void OnHost_ClientConnected(ulong clientId)
 		{
-			playersData.Add(new PlayerData(clientId, GetFirstUnusedColorId()));
+			playersData.Add(new PlayerData(clientId, GetFirstUnusedColorId(), PlayerName));
+			SetPlayerNameServerRpc(PlayerName);
+			SetPlayerIdServerRpc(AuthenticationService.Instance.PlayerId);
+
+		}
+
+		private void OnClientConnected(ulong clientId)
+		{
+			SetPlayerNameServerRpc(PlayerName);
+			SetPlayerIdServerRpc(AuthenticationService.Instance.PlayerId);
 		}
 
 		private void OnClientDisconnected(ulong clientId)
@@ -66,7 +83,7 @@ namespace Network
 			OnFailedToJoinGame?.Invoke();
 		}
 
-		private void OnServer_ClientDisconnected(ulong clientId)
+		private void OnHost_ClientDisconnected(ulong clientId)
 		{
 			for (int i = 0; i < playersData.Count; i++)
 			{
@@ -108,6 +125,24 @@ namespace Network
 		private void OnPlayersDataListChanged(NetworkListEvent<PlayerData> changeEvent)
 		{
 			OnPlayersDataChanged?.Invoke();
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		private void SetPlayerNameServerRpc(string playerName, ServerRpcParams serverRpcParams = default)
+		{
+			int playerIndex = GetPlayerIndexFromClientId(serverRpcParams.Receive.SenderClientId);
+			var playerData = playersData[playerIndex];
+			playerData.PlayerName = playerName;
+			playersData[playerIndex] = playerData;
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		private void SetPlayerIdServerRpc(string playerId, ServerRpcParams serverRpcParams = default)
+		{
+			int playerIndex = GetPlayerIndexFromClientId(serverRpcParams.Receive.SenderClientId);
+			var playerData = playersData[playerIndex];
+			playerData.PlayerId = playerId;
+			playersData[playerIndex] = playerData;
 		}
 
 		public void SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)
@@ -236,7 +271,7 @@ namespace Network
 		public void KickPlayer(ulong clientId)
 		{
 			NetworkManager.Singleton.DisconnectClient(clientId, "You have been kicked!");
-			OnServer_ClientDisconnected(clientId);
+			OnHost_ClientDisconnected(clientId);
 		}
 	}
 }

@@ -53,7 +53,7 @@ namespace UI
 			txtMessage.SetText(failText);
 		}
 
-		protected override void Show()
+		public override void Show()
 		{
 			base.Show();
 			animator.SetTrigger(popup);
