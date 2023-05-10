@@ -15,7 +15,7 @@ namespace Network
 	{
 		public static KitchenGameMultiplayer Instance { get; private set; }
 
-		public static bool IsMultiplayer;
+		public static bool IsMultiplayer = true;
 
 		public string PlayerName
 		{

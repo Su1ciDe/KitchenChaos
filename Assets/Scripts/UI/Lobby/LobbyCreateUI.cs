@@ -33,5 +33,11 @@ namespace UI.Lobby
 		{
 			Hide();
 		}
+
+		public override void Show()
+		{
+			base.Show();
+			btnCreateLobby.Select();
+		}
 	}
 }
