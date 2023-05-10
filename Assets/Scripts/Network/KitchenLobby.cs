@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using Unity.Services.Authentication;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -25,6 +31,8 @@ namespace Network
 
 		private const float lobbyListRefreshInterval = 1f;
 		private WaitForSecondsRealtime waitLobbyRefresh;
+
+		private const string JOIN_CODE_KEY = "RelayJoinCode";
 
 		public event UnityAction OnCreatingLobby;
 		public event UnityAction<string> OnCreatingLobbyFailed;
@@ -85,6 +93,48 @@ namespace Network
 			}
 		}
 
+		private async Task<Allocation> AllocateRelay()
+		{
+			try
+			{
+				var allocation = await RelayService.Instance.CreateAllocationAsync(KitchenGameMultiplayer.Instance.MAX_PLAYERS_COUNT - 1);
+				return allocation;
+			}
+			catch (RelayServiceException e)
+			{
+				Console.WriteLine(e);
+				return default;
+			}
+		}
+
+		private async Task<string> GetRelayJoinCode(Allocation allocation)
+		{
+			try
+			{
+				var relayJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+				return relayJoinCode;
+			}
+			catch (RelayServiceException e)
+			{
+				Console.WriteLine(e);
+				return default;
+			}
+		}
+
+		private async Task<JoinAllocation> JoinRelay(string joinCode)
+		{
+			try
+			{
+				var joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+				return joinAllocation;
+			}
+			catch (RelayServiceException e)
+			{
+				Console.WriteLine(e);
+				return default;
+			}
+		}
+
 		public async void CreateLobby(string lobbyName, bool isPrivate)
 		{
 			OnCreatingLobby?.Invoke();
@@ -93,6 +143,15 @@ namespace Network
 			{
 				joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, KitchenGameMultiplayer.Instance.MAX_PLAYERS_COUNT,
 					new CreateLobbyOptions { IsPrivate = isPrivate });
+
+				var allocation = await AllocateRelay();
+				var relayJoinCode = await GetRelayJoinCode(allocation);
+				await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id,
+					new UpdateLobbyOptions
+					{
+						Data = new Dictionary<string, DataObject> { { JOIN_CODE_KEY, new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) } }
+					});
+				NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
 
 				KitchenGameMultiplayer.Instance.StartHost();
 				Loader.LoadNetwork(Loader.Scenes.CharacterSelectScene);
@@ -111,6 +170,9 @@ namespace Network
 			try
 			{
 				joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
+				var relayJoinCode = joinedLobby.Data[JOIN_CODE_KEY].Value;
+				var joinAllocation = await JoinRelay(relayJoinCode);
+				NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
 				KitchenGameMultiplayer.Instance.StartClient();
 			}
@@ -130,6 +192,10 @@ namespace Network
 			{
 				joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
 
+				var relayJoinCode = joinedLobby.Data[JOIN_CODE_KEY].Value;
+				var joinAllocation = await JoinRelay(relayJoinCode);
+				NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
+
 				KitchenGameMultiplayer.Instance.StartClient();
 			}
 			catch (LobbyServiceException e)
@@ -148,6 +214,10 @@ namespace Network
 			try
 			{
 				joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
+
+				var relayJoinCode = joinedLobby.Data[JOIN_CODE_KEY].Value;
+				var joinAllocation = await JoinRelay(relayJoinCode);
+				NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
 				KitchenGameMultiplayer.Instance.StartClient();
 			}
