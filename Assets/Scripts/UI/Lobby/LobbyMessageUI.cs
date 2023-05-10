@@ -28,9 +28,13 @@ namespace UI.Lobby
 			Hide();
 		}
 
-		private void OnDisable()
+		private void OnDestroy()
 		{
 			KitchenGameMultiplayer.Instance.OnFailedToJoinGame -= FailedToJoinGame;
+			KitchenLobby.Instance.OnCreatingLobby -= CreatingLobby;
+			KitchenLobby.Instance.OnCreatingLobbyFailed -= CreatingLobbyFailed;
+			KitchenLobby.Instance.OnJoining -= Joining;
+			KitchenLobby.Instance.OnJoiningFailed -= JoiningFailed;
 		}
 
 		private void ShowMessage(string message)

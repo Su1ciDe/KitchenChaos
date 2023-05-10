@@ -7,6 +7,7 @@ using Unity.Services.Lobbies.Models;
 using Unity.Services.Authentication;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using Utility;
 using Random = UnityEngine.Random;
 
@@ -45,6 +46,12 @@ namespace Network
 		private void Start()
 		{
 			StartCoroutine(HandleHeartbeat());
+		}
+
+		private void OnDestroy()
+		{
+			StopCoroutine(HandleHeartbeat());
+			StopCoroutine(RefreshLobbiesCoroutine());
 		}
 
 		private async void InitAuth()
@@ -214,7 +221,7 @@ namespace Network
 		private IEnumerator RefreshLobbiesCoroutine()
 		{
 			yield return new WaitUntil(() => AuthenticationService.Instance.IsSignedIn);
-			while (joinedLobby is null)
+			while (joinedLobby is null && SceneManager.GetActiveScene().name.Equals(Loader.Scenes.LobbyScene.ToString()))
 			{
 				ListLobbies();
 				yield return waitLobbyRefresh;
