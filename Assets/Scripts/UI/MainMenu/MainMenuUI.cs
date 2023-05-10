@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Network;
+using UnityEngine;
 using UnityEngine.UI;
 using Utility;
 
@@ -6,22 +7,31 @@ namespace UI.MainMenu
 {
 	public class MainMenuUI : MonoBehaviour
 	{
-		[SerializeField] private Button playButton;
+		[SerializeField] private Button multiplayerButton;
+		[SerializeField] private Button singleplayerButton;
 		[SerializeField] private Button quitButton;
 
 		private void Awake()
 		{
-			playButton.onClick.AddListener(ClickPlay);
-			quitButton.onClick.AddListener(ClickQuit);
+			multiplayerButton.onClick.AddListener(MultiplayerClicked);
+			singleplayerButton.onClick.AddListener(SingleplayerClicked);
+			quitButton.onClick.AddListener(QuitClicked);
 			Time.timeScale = 1;
 		}
 
-		private void ClickPlay()
+		private void MultiplayerClicked()
 		{
+			KitchenGameMultiplayer.IsMultiplayer = true;
 			Loader.Load(Loader.Scenes.LobbyScene);
 		}
 
-		private void ClickQuit()
+		private void SingleplayerClicked()
+		{
+			KitchenGameMultiplayer.IsMultiplayer = false;
+			Loader.Load(Loader.Scenes.LobbyScene);
+		}
+
+		private void QuitClicked()
 		{
 			Application.Quit();
 		}

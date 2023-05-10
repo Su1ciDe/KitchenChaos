@@ -15,6 +15,8 @@ namespace Network
 	{
 		public static KitchenGameMultiplayer Instance { get; private set; }
 
+		public static bool IsMultiplayer;
+
 		public string PlayerName
 		{
 			get => PlayerPrefs.GetString("PlayerNameMultiplayer", "Player");
@@ -45,6 +47,13 @@ namespace Network
 
 			playersData = new NetworkList<PlayerData>();
 			playersData.OnListChanged += OnPlayersDataListChanged;
+		}
+
+		private void Start()
+		{
+			if (IsMultiplayer) return;
+			StartHost();
+			Loader.LoadNetwork(Loader.Scenes.GameScene);
 		}
 
 		public void StartHost()
