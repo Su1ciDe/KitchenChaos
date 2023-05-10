@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using Unity.Services.Authentication;
-using Unity.Services.Relay;
-using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -25,6 +25,8 @@ namespace Network
 		private Lobby joinedLobby;
 
 		public bool IsHost => joinedLobby is not null && joinedLobby.HostId.Equals(AuthenticationService.Instance.PlayerId);
+
+		[SerializeField] private bool debug;
 
 		private const float heartbeatInterval = 15f;
 		private WaitForSecondsRealtime waitHeartbeat;
@@ -67,7 +69,8 @@ namespace Network
 			if (UnityServices.State == ServicesInitializationState.Initialized) return;
 
 			var initOptions = new InitializationOptions();
-			initOptions.SetProfile(Random.Range(0, 10000).ToString());
+			if (debug)
+				initOptions.SetProfile(Random.Range(0, 10000).ToString());
 
 			await UnityServices.InitializeAsync(initOptions);
 			await AuthenticationService.Instance.SignInAnonymouslyAsync();
