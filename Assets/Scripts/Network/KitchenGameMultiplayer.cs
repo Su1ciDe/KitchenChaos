@@ -69,7 +69,6 @@ namespace Network
 			playersData.Add(new PlayerData(clientId, GetFirstUnusedColorId(), PlayerName));
 			SetPlayerNameServerRpc(PlayerName);
 			SetPlayerIdServerRpc(AuthenticationService.Instance.PlayerId);
-
 		}
 
 		private void OnClientConnected(ulong clientId)
@@ -154,12 +153,16 @@ namespace Network
 		private void SpawnKitchenObjectServerRpc(int kitchenObjectSOIndex, NetworkObjectReference kitchenObjectParentNetworkObjectReference)
 		{
 			var kitchenObjectSO = GetKitchenObjectSOAt(kitchenObjectSOIndex);
-			var kitchenObj = Instantiate(kitchenObjectSO.Prefab);
-			kitchenObj.NetworkObject.Spawn(true);
 
 			if (kitchenObjectParentNetworkObjectReference.TryGet(out NetworkObject kitchenObjectParentNetworkObject))
 				if (kitchenObjectParentNetworkObject.TryGetComponent(out IKitchenObjectParent kitchenObjectParent))
+				{
+					if (kitchenObjectParent.HasKitchenObject) return;
+
+					var kitchenObj = Instantiate(kitchenObjectSO.Prefab);
+					kitchenObj.NetworkObject.Spawn(true);
 					kitchenObj.KitchenObjectParent = kitchenObjectParent;
+				}
 		}
 
 		public int GetKitchenObjectSOIndex(KitchenObjectSO kitchenObjectSO)
@@ -182,7 +185,7 @@ namespace Network
 		{
 			if (kitchenObjectNetworkObjectReference.TryGet(out NetworkObject kitchenObjectNetworkObject))
 			{
-				if (kitchenObjectNetworkObject.TryGetComponent(out KitchenObject kitchenObject))
+				if (kitchenObjectNetworkObject && kitchenObjectNetworkObject.TryGetComponent(out KitchenObject kitchenObject))
 				{
 					ClearKitchenObjectOnParentClientRpc(kitchenObjectNetworkObjectReference);
 					kitchenObject.DestroySelf();
