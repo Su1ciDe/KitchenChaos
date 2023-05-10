@@ -69,6 +69,7 @@ namespace Counter
 		public override void InteractAlternate(Player player)
 		{
 			if (!HasKitchenObject || !HasRecipe(KitchenObject.GetKitchenObjectSO())) return;
+
 			CutObjectServerRpc();
 			TestCuttingProgressDoneServerRpc();
 		}
@@ -76,6 +77,8 @@ namespace Counter
 		[ServerRpc(RequireOwnership = false)]
 		private void CutObjectServerRpc()
 		{
+			if (!HasKitchenObject || !HasRecipe(KitchenObject.GetKitchenObjectSO())) return;
+
 			CutObjectClientRpc();
 		}
 
@@ -93,6 +96,8 @@ namespace Counter
 		[ServerRpc(RequireOwnership = false)]
 		private void TestCuttingProgressDoneServerRpc()
 		{
+			if (!HasKitchenObject || !HasRecipe(KitchenObject.GetKitchenObjectSO())) return;
+
 			var cuttingRecipeSO = GetCuttingRecipeSOWithInput(KitchenObject.GetKitchenObjectSO());
 
 			if (cuttingProgress < cuttingRecipeSO.CuttingProgressMax) return;
